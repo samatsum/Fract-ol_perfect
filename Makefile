@@ -6,49 +6,64 @@
 #    By: samatsum <samatsum@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/08/01 02:10:44 by samatsum          #+#    #+#              #
-#    Updated: 2024/08/09 03:13:29 by samatsum         ###   ########.fr        #
+#    Updated: 2024/11/11 08:10:20 by samatsum         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
-NAME = fractol
+NAME 		= fractol
 
-CC = cc
+NAME_BONUS	= fractol_bonus 
 
-CFLAGS = -Wall -Werror -Wextra -g 
-MLXFLAGS = -L ./minilibx-linux -lmlx -Ilmlx -lXext -lX11
-LIBFT = ./libft/libft.a
+SRC =		./mandatory/ft_fractol.c \
+			./mandatory/julia.c \
+			./mandatory/complex_math.c \
+			./mandatory/hooks.c \
+			./mandatory/mandelbrot.c \
+			./mandatory/params.c \
+			./mandatory/format_check.c \
+			./mandatory/ft_atod.c \
+			./mandatory/useful_functions.c \
+			./mandatory/zoom.c \
+			$(shell find ./ft_printf/ -name '*.c') \
 
-SRC = ft_fractol.c \
-	julia.c \
-	complex_math.c \
-	hooks.c \
-	mandelbrot.c \
-	params.c \
-	burning.c \
+BONUS_SRC = ./bonus/ft_fractol_bonus.c \
+			./bonus/julia_bonus.c \
+			./bonus/complex_math_bonus.c \
+			./bonus/hooks_bonus.c \
+			./bonus/mandelbrot_bonus.c \
+			./bonus/params_bonus.c \
+			./bonus/burning_bonus.c \
+			./bonus/format_check_bonus.c \
+			./bonus/ft_atod_bonus.c \
+			./bonus/useful_functions_bonus.c \
+			./bonus/zoom_bonus.c \
+			$(shell find ./ft_printf/ -name '*.c') \
 
+OBJ				=	$(SRC:.c=.o)
+BONUS_OBJS		=	$(BONUS_SRC:.c=.o)
 
-all: $(NAME)
+CC					=	cc
+RM					=	rm -f
+MANDATORYFLAGS		=	-Wall -Wextra -Werror -lXext -lX11 minilibx-linux/libmlx_Linux.a
+FSANITIZEFLAGS		=	-fsanitize=address -g3
+OPTIMIZEFLAGS		= 	-O2 -march=native
 
-$(NAME): $(SRC:.c=.o)
-	$(MAKE) --no-print-directory -C ./libft
-	echo "\033[1m LIBFT done \033[0m"
-	$(MAKE) --no-print-directory -C ./minilibx-linux
-	echo "\033[1m MiniLibX done \033[0m"
-	$(CC) $(CFLAGS) -lm $(SRC) $(LIBFT) $(MLXFLAGS) -o $(NAME)
-	echo "\033[1m Ready to FRACT-OL \033[0m"
+$(NAME): $(OBJ)
+	$(CC) -o $(NAME) $(OBJ) $(MANDATORYFLAGS) $(OPTIMIZEFLAGS)
 
-clean:
-	$(MAKE) clean -C ./libft
-	rm -rf $(SRC:.c=.o)
-	echo "OBJ deleted"
+all:	$(NAME)
 
-fclean: clean
-	$(MAKE) fclean -C ./libft
-	rm -rf $(NAME)
-	echo "$(NAME) deleted"
+$(NAME_BONUS): $(BONUS_OBJS)
+	$(CC) -o $(NAME_BONUS) $(BONUS_OBJS) $(MANDATORYFLAGS) $(OPTIMIZEFLAGS)
 
-re: fclean all
+bonus:	$(BONUS_OBJS)
 
-.PHONY: all, clean, fclean, re, bonus
+clean:		
+	$(RM) $(OBJ) $(BONUS_OBJS)
 
-.SILENT:
+fclean:		clean
+	$(RM) $(NAME) $(NAME_BONUS)
+
+re:				fclean all
+
+.PHONY:			all clean fclean re bonus
